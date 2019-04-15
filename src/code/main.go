@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/kataras/iris"
-	"github.com/iris-contrib/middleware/cors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/iris-contrib/middleware/cors"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
+	"github.com/kataras/iris"
 	"time"
 )
 
@@ -18,9 +18,9 @@ func myHandler(ctx iris.Context) {
 	ctx.JSON(user)
 }
 
-func main(){
+func main() {
 	fmt.Println("server intialing...")
-	app:=iris.New()
+	app := iris.New()
 	crs := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
 		AllowCredentials: true,
@@ -44,7 +44,7 @@ func main(){
 			ctx.JSON(response)
 		})
 		v1.Get("/about", func(ctx iris.Context) {
-			ctx.JSON(result)
+			ctx.JSON("about")
 		})
 		v1.Post("/send", func(ctx iris.Context) {
 			ctx.WriteString("sent")
