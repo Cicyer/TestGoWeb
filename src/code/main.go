@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./database"
+	//"./database"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/iris-contrib/middleware/cors"
@@ -71,13 +71,14 @@ func main() {
 		app.Run(iris.Addr(":8080"))
 		fmt.Println("server started successfully")
 	} else {
-		insertResult := database.InsertHome("test2")
-		if insertResult != nil {
-			fmt.Println(insertResult)
-		} else {
-			row, err := database.SelectByName("test2")
-			fmt.Println(row)
-			fmt.Println(err)
-		}
+		fmt.Println(time.Now())
+		//insertResult := database.InsertHome("test2")
+		//if insertResult != nil {
+		//	fmt.Println(insertResult)
+		//} else {
+		//	row, err := database.SelectByName("test2")
+		//	fmt.Println(row)
+		//	fmt.Println(err)
+		//}
 	}
 }
