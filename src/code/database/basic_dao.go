@@ -1,72 +1,36 @@
 package database
 
 import (
-	//"reflect"
-	"strconv"
-	//"fmt"
-	"time"
+	"github.com/jinzhu/gorm"
 )
+
 //基础dao,根据绑定的table自动实现一些基础的增删改查功能
 type BasicDao struct {
+	db    *gorm.DB
 	table Table
 	Error error
 }
 type Table struct {
 	TableName string
-	columns []string
+	columns   []string
 	//结构体对应表列的属性名
 	columnProperties []string
 }
 
-type Page struct {
-	start int
-	pageSize int
-}
-//sql条件生成类
+//sql条件生成类,对gorm封装
 type Condition struct {
-	whereConditions []string
-	values []string
+	db    *gorm.DB
 	Error error
 }
 
-//绑定sql条件生成的可选操作,子类也会有
-func (condition *Condition) eq(columnName string, value interface{}) *Condition{
-	if condition.whereConditions[len(condition.whereConditions)] != "" {
-		condition.whereConditions[len(condition.whereConditions)] += " AND "
-	}
-	condition.whereConditions[len(condition.whereConditions)] += *castToSqlValue(columnName,"=",value)
-	return condition
+//从全局的连接池获取一个数据连接
+func getDB() *gorm.DB {
+	return nil
 }
 
-func castToSqlValue(columnName string ,connector string, value interface{}) *string {
-	var result string = columnName+connector
-	switch value.(type) {
-	case string:
-		result += "'" + value.(string) + "'"
-	case int:
-		result += strconv.Itoa(value.(int))
-	case int64:
-		result += strconv.FormatInt(value.(int64), 10)
-	case bool:
-		if value.(bool) {
-			result += "1"
-		} else {
-			result += "0"
-		}
-	case float32:
-		result += strconv.FormatFloat(value.(float64),'E',-1,32)
-	case float64:
-		result += strconv.FormatFloat(value.(float64),'E',-1,64)
-	case time.Time:
+//绑定BasicDao的基础操作方法,如果是自定义sql则不借助基础的Table,而是直接使用gorm自带的model获取返回
 
-	default:
-		//无法解析的类型 记录日志,不做操作
-		result = ""
-	}
-	return &result
-}
-
-
+//绑定Condition的条件创建方法
 
 //func BindBasicDaoMethods(object *interface{}) BasicDao {
 //	//抽出所有属性存为列名,顺便判断是否有表名,没有表名提示错误
@@ -79,4 +43,3 @@ func castToSqlValue(columnName string ,connector string, value interface{}) *str
 //
 //	//将BasicDao接口的方法实现绑定到该结构体上
 //}
-
