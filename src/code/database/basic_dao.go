@@ -5,41 +5,69 @@ import (
 )
 
 //基础dao,根据绑定的table自动实现一些基础的增删改查功能
+type IBasicDao interface {
+	//会自动从DB中获取一个连接
+	CreateCondition(*gorm.DB) *condition
+	SelectOne(condition *condition) *interface{}
+	SelectPage(condition *condition,page *Page) []*interface{}
+	//返回这个表一个实例的方法
+	newInstance() *interface{}
+
+}
+
 type BasicDao struct {
-	db    *gorm.DB
-	table Table
-	Error error
-}
-type Table struct {
-	TableName string
-	columns   []string
-	//结构体对应表列的属性名
-	columnProperties []string
-}
 
-//sql条件生成类,对gorm封装
-type Condition struct {
-	db    *gorm.DB
 	Error error
 }
 
-//从全局的连接池获取一个数据连接
-func getDB() *gorm.DB {
+func (b BasicDao)CreateCondition(db *gorm.DB) *condition{
+	condition := condition{
+		dB:db,
+	}
+	return &condition
+}
+
+func (b BasicDao)SelectOne(condition *condition) *interface{}{
+	return nil
+}
+func (b BasicDao)SelectPage(condition *condition,page *Page)  []*interface{}{
 	return nil
 }
 
-//绑定BasicDao的基础操作方法,如果是自定义sql则不借助基础的Table,而是直接使用gorm自带的model获取返回
+//从全局连接池获取表所在数据源连接的方法
+type selectOne func(condition *condition) *interface{}
+type selectPage func(condition *condition,page *Page) []*interface{}
+type condition struct {
+	dB *gorm.DB
+}
+//对Condition绑定可用的gorm条件选择器绑定
+//条件where
+func (c condition) Where(query interface{}, args ...interface{}) *condition{
+	c.dB = c.dB.Where(query,args)
+	return &c
+}
+//指定只返回某列
+func (c condition) Select(query interface{}, args ...interface{}) *condition{
+	c.dB = c.dB.Select(query,args)
+	return &c
+}
 
-//绑定Condition的条件创建方法
+type Page struct {
+	PageSize int
+	PageNumber int
+	Total int
+}
 
-//func BindBasicDaoMethods(object *interface{}) BasicDao {
-//	//抽出所有属性存为列名,顺便判断是否有表名,没有表名提示错误
-//	table := reflect.TypeOf(object).Elem()
-//	columns := []string
-//	for i := 0; i < table.NumField(); i++ {
-//		doc[table.Field(i).Tag.Get("json")] = table.Field(i).Tag.Get("doc")
-//	}
-//	tableName := table.FieldByName("TableName")
-//
-//	//将BasicDao接口的方法实现绑定到该结构体上
-//}
+
+type myTestDao struct {
+	//由BasicDao来提供基本的操作方法,而myTestDao则实现getDB与newInstance方法
+	BasicDao
+}
+func (T myTestDao)newInstance() *interface{}{
+	return nil
+}
+
+func test()  {
+
+}
+
